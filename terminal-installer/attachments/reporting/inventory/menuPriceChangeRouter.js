@@ -151,8 +151,8 @@ var menuInventoryView =
 	 	     menuscreentitle = "MODIFIERS";
 	 	 } else {
 	 	     var header = menuModelforInventory.get_header(model);
-	 	     menuscreentitle = "".concat(header.description1).concat(" ")
-	 	    	 .concat(header.description2).concat(" ")
+	 	     menuscreentitle = "".concat(header.description1).concat("\n")
+	 	    	 .concat(header.description2).concat("\n")
 	 	    	 .concat(header.description3);
 	 	 }
 	 	 var menuScreen = menuModelforInventory.menu_screen(model);
@@ -177,8 +177,8 @@ var menuInventoryView =
 	 	     menuscreentitle = "MODIFIERS";
 	 	 } else {
 	 	     var header = menuModelforInventory.get_header(item.display.screen);
-	 	     menuscreentitle = "".concat(header.description1).concat(" ")
-	 	    	 .concat(header.description2).concat(" ")
+	 	     menuscreentitle = "".concat(header.description1).concat("\n")
+	 	    	 .concat(header.description2).concat("\n")
 	 	    	 .concat(header.description3);
 	 	 }
 

@@ -2835,7 +2835,8 @@
       <table class="menutable" style="background-color:#f4f4f4;">
 	<tr>
 	  <td align="center">
-	    <span style="font-size:24px;color:fff;">{{menuscreentitle}}</span>
+	    <!--<span style="font-size:24px;color:fff;">{{menuscreentitle}}</span>-->
+	    <p style="font-size:24px;color:fff;">{{menuscreentitle}}</p>
 	  </td>
 	</tr>
       </table>
@@ -2861,7 +2862,6 @@
 	<tr>
 	  {{#menuButtonHeaders}}
 	  <td width="25%">
-	    <!--width:168px-->
 	    <div class="menuLableBottomClass" id="menubuttonheader{{menu_id}}">
 	      {{#description1}}{{description1}}{{/description1}} <br />
 	      {{#description2}}{{description2}}{{/description2}} <br />
@@ -2876,25 +2876,25 @@
     <script id="menuSetMenusEditHeader_P" class="partial" type="text/html">
         <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-          <td width="25%">
+          <td valign="middle" width="25%">
             <div class="menuEditBottomClass" id="menueditheader1">
                 Edit Menu 1<br /> 
                 Header
             </div>
           </td>
-          <td width="25%">
+          <td valign="middle" width="25%">
               <div class="menuEditBottomClass" id="menueditheader2">
                 Edit Menu 2<br /> 
                 Header
               </div>
           </td>
-          <td width="25%">
+          <td valign="middle" width="25%">
               <div class="menuEditBottomClass" id="menueditheader3">
                 Edit Menu 3<br /> 
                 Header
               </div>
           </td>
-          <td width="25%">
+          <td valign="middle" width="25%">
               <div class="menuEditBottomClass" id="menueditheader4">
                 Edit Menu 4 <br />
                 Header
@@ -3013,7 +3013,7 @@
       </form>
       <ul style="list-style-type:none; float: left;">
 	<li>
-	  <button id="btnMenuSave" class="{{>commonButtonClasses_P}}" role="button" aria-disabled="false"> <!--onClick="saveEditMenu();"-->
+	  <button id="btnMenuSave" class="{{>commonButtonClasses_P}}" role="button" aria-disabled="false">
 	    <span class="ui-button-text">Save</span>
 	  </button>
 	  <button class="{{>commonButtonClasses_P}}" role="button" aria-disabled="false" onClick="closeEditMenu();">
@@ -3033,7 +3033,6 @@
 	  <div id='menusetmenuscenter'></div>
 	  <div id='menusetmenusbottom'></div>
 	  {{>menuSetMenusEditHeader_P}}
-	  
 	</div>
 	<div style='float:right;width:300px;'>
 	  <div id='menusetmenusleft'></div>

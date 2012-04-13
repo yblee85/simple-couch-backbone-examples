@@ -131,9 +131,9 @@ var menuSetMenusView =
 	 	 } else {
 	 	     var header = menuModel.get_header(model);
 	 	     menuscreentitle = "".concat(header.description1)
-	 	         .concat(" ")
+	 	         .concat("\n")
 	 	    	 .concat(header.description2)
-	 	    	 .concat(" ")
+	 	    	 .concat("\n")
 	 	    	 .concat(header.description3);
 	 	 }
 
@@ -160,9 +160,9 @@ var menuSetMenusView =
 	 	 } else {
 	 	     var header = menuModel.get_header(item.display.screen);
 	 	     menuscreentitle = "".concat(header.description1)
-	 	         .concat(" ")
+	 	         .concat("\n")
 	 	    	 .concat(header.description2)
-	 	    	 .concat(" ")
+	 	    	 .concat("\n")
 	 	    	 .concat(header.description3);
 	 	 }
 

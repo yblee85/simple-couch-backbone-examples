@@ -20,6 +20,7 @@ var current_user_info_view =
 		}
 	    }
 	});
+
 var company_tree_navigation_view =
     Backbone.View.extend(
 	{
@@ -28,8 +29,6 @@ var company_tree_navigation_view =
 	    },
 	    view_entity:function(event){
 		var entity_id = event.currentTarget.id;
-		var entity_str = $("#"+entity_id).html();
-		$("#naviStringInOtherUser").html(entity_str);
 		this.trigger('view-entity',entity_id);
 	    },
 	    render:function(tree){
@@ -38,6 +37,7 @@ var company_tree_navigation_view =
 		el.html(ich[this.options.template](tree));
 	    }
 	});
+	
 var customer_admin_add_user_view =
     Backbone.View.extend(
 	{
@@ -147,13 +147,13 @@ var adminRouter =
 		     router.load_users();
 		 },
 		 load_users:function(){
-		     var entity_str = $("#"+topLevelEntity(ReportData).id).html();
-             $("#naviStringInOtherUser").html(entity_str);
 		     this.load_users_for_id(topLevelEntity(ReportData).id);
 		 },
 		 load_users_for_id:function(id){
 		     var router = this;
 		     router.current_entity_id = id;
+		     var entity_str = $("#"+id).html();
+             $("#naviStringInOtherUser").html(entity_str);
 		     router.user_collection.reset();
 		     console.log("menuAdministration: " + id);
 		     var breadCrumb = autoBreadCrumb(); //?
