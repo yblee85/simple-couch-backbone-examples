@@ -379,6 +379,108 @@ function StoreInputDialog (attachTo,options) {
 				       d.dialog("open");
 				   });
 };
+
+//TODO : edit / add terminal dialog tmp is different (it has dropdown box)
+function TerminalInputDialog (attachTo,options) {
+    // a workaround for a flaw in the demo system (http://dev.jqueryui.com/ticket/4375), ignore!
+    $( "#dialog:ui-dialog" ).dialog( "destroy" );
+    var d = $("#dialog-form");
+    var label = d.find("#terminal-id"),
+    areaCode = d.find("#areaCode"),
+    postalCode = d.find("#postalCode"),
+    countryCode = d.find("#countryCode"),
+    provinceCode = d.find("#provinceCode"),
+    cityCode = d.find("#cityCode"),
+    storeCode = d.find("#storeCode"),
+    companyCode = d.find("#companyCode"),
+    centrallycontrolmenus = d.find("#centrallycontrolmenus"),
+    usingautomatedpayment = d.find("#usingautomatedpayment"),
+    usingmobqredits = d.find("#usingmobqredits"),
+
+    allFields = $([])
+    .add(label)
+    .add(areaCode)
+    .add(postalCode)
+    .add(countryCode)
+    .add(provinceCode)
+    .add(cityCode)
+    .add(storeCode)
+    .add(companyCode)
+    .add(centrallycontrolmenus)
+    .add(usingautomatedpayment)
+    .add(usingmobqredits);
+
+    var tips = $(".validateTips");
+    
+    d.dialog(
+    {autoOpen: false,
+     height: 600,
+     width: 500,
+     modal: true,
+     close: function() {
+         if(options.clearOnExit) {
+         allFields.val("").removeClass(genericErrorClass);
+         allFields.filter("input:checked").attr("checked",false);
+         }
+     },
+     buttons: {
+         "Submit": function() {
+         var newTerminalData = {
+             terminal_label:label.val(),
+             areaCode:areaCode.val(),
+             postalCode:postalCode.val(),
+             countryCode:countryCode.val(),
+             provinceCode:provinceCode.val(),
+             cityCode:cityCode.val(),
+             storeCode:storeCode.val(),
+             companyCode:companyCode.val(),
+             usingautomatedpayment:usingautomatedpayment.is(":checked"),
+             usingmobqredits:usingmobqredits.is(":checked"),
+             centrallycontrolmenus:centrallycontrolmenus.is(":checked"),
+             usingautomatedpayment:usingautomatedpayment.is(":checked")
+             
+         };
+
+         var newTerminalData_w_options = _.clone(newTerminalData);
+         if(options.isCreate) {
+             _.extend(newTerminalData, {creationdate:new Date(), installed:false});
+             _.extend(newTerminalData_w_options, {isCreate:options.isCreate});
+         }
+
+
+         var validationResults = options.validator(newTerminalData_w_options);
+
+         var passedValidation;
+         (_.isEmpty(validationResults))?passedValidation=true:passedValidation=false;
+         allFields.removeClass(genericErrorClass);
+
+         if(passedValidation) {
+             options.success(newTerminalData);
+             allFields.val("");
+             d.dialog("close");
+         }
+         else{
+             PostValidator(d,tips,validationResults);
+         }  
+         },
+         Cancel: function() {
+         d.dialog("close");
+         }
+     }
+    });
+    
+    
+    $("#"+attachTo).button().click(function() {
+                        if(!options.isCreate) {
+                            var unmodifiedTerminal = options.getUnmodifiedTerminal();
+                            console.log(unmodifiedTerminal);
+                        }
+                        CompanyManagementRouter.view._reset(d, unmodifiedTerminal);
+                       d.dialog("open");
+                   });
+};
+
+/*
 function TerminalInputDialog (attachTo,options) {
     // a workaround for a flaw in the demo system (http://dev.jqueryui.com/ticket/4375), ignore!
     $( "#dialog:ui-dialog" ).dialog( "destroy" );
@@ -469,6 +571,7 @@ function TerminalInputDialog (attachTo,options) {
 				       d.dialog("open");
 				   });
 };
+*/
 
 function quickViewDialog (html,options) {
     var d = $("#dialog-quickView");    	

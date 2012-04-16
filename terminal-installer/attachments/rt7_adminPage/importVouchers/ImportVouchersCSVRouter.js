@@ -30,6 +30,46 @@ var importVoucherRouter =
                     console.log(csvData);
                     $("#csvtextarea").val(csvData);
                     $("#csvtextarea").attr("readonly",true);
+                    
+                    /*
+                    //TODO : this is used for bulkSave area code csv file to locations_rt7
+                    console.log("temparate data process for area code");
+                    var linedCSV = csvData.split("\n");
+                    var mappedCSV = _.map(linedCSV, function(item){
+                        var linedItem = item.split(",");
+                        if(linedItem[3].indexOf("\"")>=0) {
+                            var citiesWithoutQ = linedItem[3].replace(/"/g,"");
+                            var listCity = citiesWithoutQ.split(",");
+                            return _.map(listCity,function(city){
+                                return {
+                                    country_code:(linedItem[1].toString()).trim(),
+                                    province_code:(linedItem[2].toString()).trim(),
+                                    city_code:(city).trim(),
+                                    area_code:(linedItem[0].toString()).trim()
+                                    };
+                            });
+                        } else {
+                            return {
+                                country_code:(linedItem[1].toString()).trim(),
+                                province_code:(linedItem[2].toString()).trim(),
+                                city_code:(linedItem[3]).trim(),
+                                area_code:(linedItem[0].toString()).trim()
+                                };
+                        }                    
+                    });
+                    var processedData = _.flatten(mappedCSV);
+                    console.log(processedData);
+                    console.log("json stringify data...");
+                    console.log(JSON.stringify(processedData));
+                    var db_locations = cdb.db("locations2_rt7");
+                    db_locations.bulkSave({docs : processedData}, {
+                            success:function(){
+                                console.log("yay");
+                            },
+                            error:function() {
+                            }
+                    });
+                    */
                 };
                 reader.onerror = function(err){
                     var errMsg = err.getMessage();

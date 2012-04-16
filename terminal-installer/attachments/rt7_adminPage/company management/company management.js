@@ -1,6 +1,7 @@
 
 var Companies;
 var rewardsModel;
+var Locations;
 
 function guidGenerator() {
     var S4 = function() {
@@ -372,6 +373,9 @@ function editTerminal(companyID, groupID, storeID, terminalID) {
 	},
 	success : function(resp) {
 	    company.editTerminal(groupID, storeID, terminalID, resp);
+	},
+	getUnmodifiedTerminal : function() {
+	    return previousTerminal;
 	}
     };
 };
@@ -553,6 +557,7 @@ var CompanyManagementRouter = new (Backbone.Router.extend(
 
 					   },
 					   terminalsManager:function(companyID, groupID, storeID){
+					       this.view = new location_codes_view();
 					       console.log("terminalsManager: " + companyID + " " + groupID + " " + storeID);
 					       var company = Companies.getModelById(companyID);
 					       company.unbind('change');
@@ -996,6 +1001,7 @@ terminalsView =
 	{
 	    initialize : function() {
 		var view = this;
+		
 		_.bindAll(view, 'renderManagementPage', 'renderModifyPage');
 		CompanyManagementRouter.bind('route:terminalsManager', function(companyID, groupID, storeID) {
 						 console.log('terminalsView:route:terminalsManager');
@@ -1063,3 +1069,149 @@ terminalsView =
 		return view;
 	    }
 	});
+
+
+var location_codes_view = 
+    Backbone.View.extend({
+        initialize : function() {
+            var view = this;
+            $.couch.db("locations_rt7").allDocs({
+                success:function(data){
+                    console.log(data);
+                    Locations = _.pluck(data.rows,"doc");
+                    view.locations = Locations;
+                },
+                error:function() {
+                    alert("Fail to load Locations. Please, try again.");
+                },
+                include_docs:true
+            });
+            
+        },
+        _reset : function(form,terminal) {
+            var view = this;
+            view.form = form;
+            view.countryDrop = form.find("#countryCode");
+            view.provinceDrop = form.find("#provinceCode");
+            view.cityDrop = form.find("#cityCode");
+            view.areaDrop = form.find("#areaCode");
+            view.empty_all();
+            view.load_countries();
+            if(_.isNotEmpty(terminal)) {
+                var terminal_label = form.find("#terminal-id");
+                var storeCode = form.find("#storeCode");
+                var companyCode = form.find("#companyCode");
+                var postalCode = form.find("#postalCode");
+                
+                terminal_label.val(terminal.terminal_label);
+                storeCode.val(terminal.storeCode);
+                companyCode.val(terminal.companyCode);
+                postalCode.val(terminal.postalCode);
+                view.countryDrop.val(terminal.countryCode).change();
+                view.provinceDrop.val(terminal.provinceCode).change();
+                view.cityDrop.val(terminal.cityCode).change();
+                view.areaDrop.val(terminal.areaCode).change();
+            }
+        },
+        empty_countries:function() {
+            var view = this;
+            $('option', view.countryDrop).remove();
+        },
+        empty_provinces:function() {
+            var view = this;
+            $('option', view.provinceDrop).remove();
+        },
+        empty_cities:function() {
+            var view = this;
+            $('option', view.cityDrop).remove();
+        },
+        empty_area:function() {
+            var view = this;
+            $('option', view.areaDrop).remove();
+        },
+        empty_all:function() {
+            var view = this;
+            view.empty_countries();
+            view.empty_provinces();
+            view.empty_cities();
+            view.empty_area();
+        },
+        load_countries:function() {
+            var view = this;
+            view.empty_all();
+            view.countryDrop.append('<option value="">' + ' ' + '</option>');
+            view.countryDrop.append('<option value="US">' + 'US' + '</option>');
+            view.countryDrop.append('<option value="Canada">' + 'Canada' + '</option>');
+            view.countryDrop
+                .change(function(event){
+                    view.empty_provinces();
+                    view.empty_cities();                    
+                    view.empty_area();
+                    var country = $(this).val();
+                    view.load_provinces(country);
+                });
+        },
+        load_provinces:function(country) {
+            var view = this;
+            var selectedLocations = 
+                _.filter(view.locations,function(item){
+                    return item.country_code == country;  
+                });
+            var listProvinces = _(selectedLocations).chain()
+                                    .pluck("province_code")
+                                    .uniq()
+                                    .sortBy(function(name){return name;})
+                                    .value();
+                                    
+            view.provinceDrop.append('<option value="">' + ' ' + '</option>');
+            _.each(listProvinces,function(item){
+                view.provinceDrop.append('<option value=\"'+item.replace(/ /g,'\ ')+'\"">' + item + '</option>');
+            });
+
+            view.provinceDrop
+                .change(function(event){
+                    view.empty_cities();                    
+                    view.empty_area();
+                    var province = $(this).val();
+                    view.load_cities(country, province);
+                });
+        },
+        load_cities:function(country, province) {
+            var view = this;
+            var selectedLocations = 
+                _.filter(view.locations,function(item){
+                    return item.country_code == country && item.province_code==province;  
+                });
+            var listCities = _(selectedLocations).chain()
+                                    .pluck("city_code")
+                                    .uniq()
+                                    .sortBy(function(name){return name;})
+                                    .value();
+            view.cityDrop.append('<option value="">' + ' ' + '</option>');
+            _.each(listCities,function(item){
+                view.cityDrop.append('<option value=\"'+item.replace(/ /g,'\ ')+'\">' + item + '</option>');
+            });
+            view.cityDrop
+                .change(function(event){
+                    view.empty_area();
+                    var city = $(this).val();
+                    view.load_area(country, province, city);
+                });
+        },
+        load_area:function(country,province,city) {
+            var view = this;
+            var selectedLocations = 
+                _.filter(view.locations,function(item){
+                    return item.country_code == country && item.province_code==province && item.city_code==city;  
+                });
+            var listArea = _(selectedLocations).chain()
+                                    .pluck("area_code")
+                                    .uniq()
+                                    .sortBy(function(name){return name;})
+                                    .value();
+            view.areaDrop.append('<option value="">' + ' ' + '</option>');
+            _.each(listArea,function(item){
+                view.areaDrop.append('<option value='+item+'>' + item + '</option>');
+            });
+        }
+    });

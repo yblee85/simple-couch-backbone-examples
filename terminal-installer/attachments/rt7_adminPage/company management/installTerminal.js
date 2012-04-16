@@ -28,7 +28,7 @@ function installTerminal(companyID,groupID,storeID,terminalID){
 				group_label:group.groupName,
 				company_id:company.get('_id'),
 				company_label:company.get('companyName'),
-				location:_.selectKeys(terminal,["postalCode","areaCode","storeCode","companyCode","cityCode","countryCode"]),
+				location:_.selectKeys(terminal,["postalCode","areaCode","storeCode","companyCode","cityCode","countryCode","provinceCode"]),
 				creationDate:terminal.creationdate,
 				receipt_id:terminal.receipt_id,
 

@@ -220,6 +220,30 @@ var Company = couchDoc.extend(
 	 var terminalToMod = this.getTerminal(groupID,storeID,terminalID);
 	 _.extend(terminalToMod,terminal);
 	 this.save();
+	 //TODO : update terminals_rt7
+	 newLocation = _.selectKeys(terminal,"countryCode","provinceCode","cityCode","postalCode","areaCode");
+	 $.couch.db("terminals_rt7").view("app/campaignFilterQuery",{
+	     success:function(data){
+	         //console.log(data);
+	         var terminalDoc = (_.first(data.rows)).doc;
+	         terminalDoc.location = newLocation;
+	         $.couch.db("terminals_rt7").saveDoc(terminalDoc,{
+	             success:function(data){
+	                 alert("Success Edit Terminal");
+	             },
+	             error:function(status){
+	                 //console.log(status);
+	                 alert(status);
+	             }
+	         });
+	     },
+	     error:function(){
+	         alert("Error Occured. Please, try again.");
+	     },
+	     key:terminalID,
+	     include_docs:true
+	 });
+	 
      },
      validateTerminal : function (newTerminal,previous,terminals) {
 	 function terminalIDExists(terminals,terminalName){
