@@ -27,7 +27,6 @@ ddoc.rewrites = [
     {from: "_users/*", to: "../../../_users/*"},
     {from: "users/*", to: "../../../users/*"},
     {from: "locations_rt7/*", to: "../../../locations_rt7/*"},
-    {from: "locations2_rt7/*", to: "../../../locations2_rt7/*"},
     {from: "/", to:'reporting/report.html'},
     {from: "/api", to:'../../'},
     {from: "/api/*", to:'../../*'},
