@@ -6,6 +6,10 @@
     <link href="../layout.css" rel="stylesheet" type="text/css" />
     <link href="../css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css" />
     
+    <!-- campain manager -->
+    <link href="../css/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css">
+    <link href="../css/jquery.multiselect.css" rel="stylesheet" type="text/css">
+    
     <script language="javascript" type="text/javascript" src="../lib/jquery-1.7.1.js"></script>
     <script language="javascript" type="text/javascript" src="../lib/jquery.timers-1.0.0.js.txt"></script>
     <script language="javascript" type="text/javascript" src="../lib/sha1.js"></script>
@@ -22,7 +26,6 @@
     <script language="javascript" type="text/javascript" src="../lib/couchDBhelpers.js"></script>
     <script language="javascript" type="text/javascript" src="../lib/table2CSV.js"></script>
     
-    
     <script language="javascript" type="text/javascript" src="../lib/underscore.js"></script>
     <script language="javascript" type="text/javascript" src="../lib/underscore.string.js"></script>
     <script language="javascript" type="text/javascript" src="../lib/underscore_extended.js"></script>
@@ -32,6 +35,17 @@
     
     <script language="javascript" type="text/javascript" src="../lib/couch-backbone.js"></script>
     <script language="javascript" type="text/javascript" src="../lib/async.js"></script>
+    
+    <!-- campain manager -->
+    <script language="javascript" type="text/javascript" src="../lib/jquery-ui-timepicker-addon.js"></script>
+    <script language="javascript" type="text/javascript" src="../lib/jquery.MultiFile.js"></script>
+    <script language="javascript" type="text/javascript" src="../lib/jquery.MultiFile.pack.js"></script>
+    <script language="javascript" type="text/javascript" src="../lib/jquery.multiselect.js"></script>
+    <script language="javascript" type="text/javascript" src="../lib/js2form.js"></script>
+    <script language="javascript" type="text/javascript" src="../lib/form2object.js"></script>
+    <script language="javascript" type="text/javascript" src="../lib/multifile.js"></script>
+    <script language="javascript" type="text/javascript" src="../lib/vertebrae.js"></script>
+    
     
     <script language="javascript" type="text/javascript" src="../lib/TerritoryUser.js"></script>
     <script language="javascript" type="text/javascript" src="../rt7_adminPage/company management/heroburger_terminal.js"></script>
@@ -52,6 +66,7 @@
     <script language="javascript" type="text/javascript" src="../rt7_adminPage/inventory management/inventory management.js"></script>
     <script language="javascript" type="text/javascript" src="../rt7_adminPage/importVouchers/vouchers_helper.js"></script>
     <script language="javascript" type="text/javascript" src="../rt7_adminPage/importVouchers/ImportVouchersCSVRouter.js"></script>
+    <script language="javascript" type="text/javascript" src="../rt7_adminPage/campaign_manager/createCampaignRouter.js"></script>
     <script language="javascript" type="text/javascript" src="../rt7_adminPage/docRdy.js"></script>
     
     <style>
@@ -78,7 +93,6 @@
     <script id="commonClasses_P" class="partial" type="text/html">
       text ui-widget-content ui-corner-all
     </script>
-    
     
     <script id="userpass_P" class="partial" type="text/html">
       <label for="user">Master User ID</label>
@@ -285,6 +299,7 @@
 	<!--<div class="report-menu"><a style="cursor: pointer;" onclick="showMsg();"><img src="../images/admin/user.png" class="report-menu-icon" border="0"/>Backoffice Admin User Info</a></div>-->
 	<!--<div class="report-menu"><a style="cursor: pointer;" onclick="showMsg();"><img src="../images/admin/reports.png" class="report-menu-icon" border="0"/>Reports</a></div>-->
 	<!--<div class="report-menu"><a style="cursor: pointer;" onclick="showMsg();"><img src="../images/admin/terminal.png" class="report-menu-icon" border="0"/>Install/Deactivate a Terminal</a></div>-->
+	<div class="report-menu"><a href="#createcampaigns"><img src="../images/admin/importvoucher.png" class="report-menu-icon" border="0"/>Create Campaign</a></div>
 	<div class="report-menu"><a style="cursor: pointer;" onClick="logout()"><img src="../images/admin/logout.png" class="report-menu-icon" border="0"/>Logout</a></div>
 	<div style="clear:both"></div>
       </div>
@@ -638,7 +653,7 @@
       {{/terminal}}
     </script>
     
-    <script id="terminalForm2_P" class="partial" type="text/html">
+    <script id="terminalInputForm_P" class="partial" type="text/html">
       <form id="form">
     <label for="terminal-id">Terminal ID</label>
     <input type="text" id="terminal-id" class="text ui-widget-content ui-corner-all" />
@@ -697,7 +712,7 @@
     <script id="terminalInputDialog_TMP" type="text/html">
       <div id="dialog-form" title="{{title}}">
 	<p class="validateTips"></p>
-	{{>terminalForm2_P}}
+	{{>terminalInputForm_P}}
       </div>
     </script>
     
@@ -1013,6 +1028,146 @@
       <hr />
       {{>importButton_P}}
     </div>
+      </div>
+    </script>
+    
+    <!----------------------------------------------------------------------------------------------------->
+    
+    <!---------------------------------- CAMPAIGN MANAGER ------------------------------------------------->
+    <script id="daySelection_TMP" type="text/html">
+      <li index={{index}}>
+    <label>DAY
+      <select type="select"  name="days_and_hours[{{index}}].day" multiple="multiple" size=8>
+        <option value="MON">MON</option>
+        <option value="TUE">TUE</option>
+        <option value="WED">WED</option>
+        <option value="THU">THU</option>
+        <option value="FRI">FRI</option>
+        <option value="SAT">SAT</option>
+        <option value="SUN">SUN</option>
+      </select>
+    </label>
+    
+    <label>start <input class="startTime" type="text" size=10 name="days_and_hours[{{index}}].time.start" value="" var_type="time" /></label>
+    <label>end <input class="endTime" type="text" size=10 name="days_and_hours[{{index}}].time.end" value="" var_type="time" /></label>
+    <label> 24 hours <input class="checkAlltimes" type="checkbox" name="all_times"/></label>
+      </li>
+    </script>
+    
+    <script id="option_TMP" type="text/html">
+      <option value={{value}}>{{label}}</option>
+    </script>
+
+    <script id="options_TMP" type="text/html">
+      {{#list}}<option value={{value}}>{{label}}</option>{{/list}}
+    </script>
+
+    <script id="options_TMP1" type="text/html">
+      {{#list}}
+      <option value={{name}}
+          {{#selected}}
+          selected="true"
+          {{/selected}}
+          >{{name}}</option>
+      {{/list}}
+    </script>
+
+    <script id="optionGroup_TMP" type="text/html">
+      {{#optGroups}}
+      <optgroup label="{{label}}">
+     {{#options}}
+     <option value={{value}}>{{label}}</option>
+     {{/options}}
+       </optgroup>
+      {{/optGroups}}
+    </script>
+
+    <script id="countrySelection_TMP" type="text/html">
+    <select id="countries" type="select"  name="countries" multiple="multiple" size=8>
+      {{#countries}}
+      <option value={{.}}>{{.}}</option>
+      {{/countries}}
+    </select>
+    </script>
+    
+    <script id="createCampaign_TMP" type="text/html">
+      {{>mainheader}}
+      <div style="width:1000px;margin:20px auto;padding:20px;background-color:#fff;font-size:13px;font-weight:bold;border-radius:20px;">
+      <h1>Create Campaign</h1>
+      {{>menuButton_P}}
+      <hr/>
+      <form id="campaignForm" action="javascript:test()">
+      <dl>
+    <dt><label for="_id">Campaign ID</label></dt>
+    <dd><input id="_id" type="text" name="_id"/></dd>
+      </dl>
+      <dl>
+    <dt>Description</dt>
+    <dd><input id="description" type="text" name="description"/></dd>
+      </dl>
+      <dl>
+    <dt>Air Date</dt>
+    <dd>
+      <label>from <input id="startDate" type="text" name="time.start" var_type="date" value="" size=10/></label>
+      <label>to <input id="endDate" type="text" name="time.end" var_type="date" value="" size=10/></label>
+    </dd>
+      </dl>
+      <dt><label for="advertiser">Adevertiser</label></dt>
+      <dd><input id="advertiser" type="text" name="advertiser"/></dd>
+
+      <dl>
+    <dt><label for="salesperson">Salespoerson</label></dt>
+    <dd><input id="salesperson" type="text" name="salesperson"/></dd>
+      </dl>
+      <dl>
+    <dt><label for="type">Presentation type</label></dt>
+    <dd>
+      <label>Captive <input id="radioCaptive" type="radio" name="presentation_type" value="captive"/></label>
+      <label>Passive <input id="radioPassive" type="radio" name="presentation_type" value="passive"/></label>
+    </dd>
+      </dl>
+      <dl>
+    <dt><label for="images"> Images </label></dt>
+    <dd><input id="filechooser" type="file" class="multi" ></dd>
+      </dl>
+      <dl>
+    <dt>Broadcast hours</dt>
+      <dd>
+        <ul id="days_and_hours_list"></ul>
+      </dd>
+      </dl>
+      <div>
+    <input type="button" id="btnAdd" value="add days/hours" />
+    <input type="button" id="btnDel" value="remove days/hours" />
+      </div>
+
+<!--
+      <dl>
+    <dt>Broadcast locations</dt>
+    <label>All Terminals <input type="checkbox" name="_all_terminals"/></label>
+    
+    <input type="hidden" id="for_terminals_created_before" name="for_terminals_created_before" value="" var_type="date"/>
+    <label>Future <input type="radio" name="_for_terminals" value="future"/></label>    
+    <label>Current <input type="radio" name="_for_terminals" value="current"/> </label> 
+      </dl>
+
+      <div>
+    <input type="button" id="btnAddTerminal" value="add terminals" />
+    <input type="button" id="btnDelTerminal" value="remove terminals" />
+      </div>
+-->
+      <dl>
+    <dt>Broadcast Regions</dt>
+    <dd>
+          <select id="countries" type="select"  name="countries" multiple="multiple" size=8></select>
+          <select id="provinces" type="select"  name="provinces" multiple="multiple" size=8></select>
+          <select id="cities" type="select"  name="cities" multiple="multiple" size=8></select>
+          <select id="postalCodes" type="select"  name="postalCodes" multiple="multiple" size=8></select>
+    </dd>   
+      </dl>
+      <input type="submit" />
+    </form>
+      <hr />
       </div>
     </script>
     

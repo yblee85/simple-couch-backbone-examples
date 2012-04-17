@@ -8,6 +8,7 @@ ddoc.rewrites = [
     {from: "admin", to: "rt7_adminPage/rt7_backoffice.html"},
     {from: "login", to: "reporting/report.html"},
     {from: "new/*", to: "../../../*", method : "PUT"},
+    {from: "campaigns/*", to: "../../../campaigns/*"},
     {from: "terminals_rt7/*", to: "../../../terminals_rt7/*"},
     {from: "terminals_corp/*", to: "../../../terminals_corp/*"},
     {from: "cashouts/*", to: "../../../cashouts/*"},
