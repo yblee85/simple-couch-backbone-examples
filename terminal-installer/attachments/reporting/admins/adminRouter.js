@@ -21,25 +21,6 @@ var current_user_info_view =
 	    }
 	});
 
-/*
-var company_tree_navigation_view =
-   Backbone.View.extend(
-	{
-	    events:{
-		"click li":"view_entity"
-	    },
-	    view_entity:function(event){
-		var entity_id = event.currentTarget.id;
-		this.trigger('view-entity',entity_id);
-	    },
-	    render:function(tree){
-		console.log("render company navigation tree");
-		var el = this.$el;
-		el.html(ich[this.options.template](tree));
-	    }
-	});
-	
-*/
 var customer_admin_add_user_view =
     Backbone.View.extend(
 	{

@@ -228,11 +228,11 @@ function finalSetup(){
 	return obj;
     };
 
-    addButtonSetup();
-    deleteButtonSetup();
+    //addButtonSetup();
+    //deleteButtonSetup();
 
     //add days_and_hours selectors so data can be entered into them from the fetched doc
-    _(transformedData.days_and_hours.length).chain().range().each(function(){ $('#btnAdd').trigger('click');});
+    //_(transformedData.days_and_hours.length).chain().range().each(function(){ $('#btnAdd').trigger('click');});
     
     //$("#for_terminals_created_before").val(new Date()); //for creating new compaigns
     var $formElements = $("#campaignForm").find('[name]');
@@ -421,22 +421,113 @@ function postalCodeSetup(view,db){
     finalSetup();
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function inputDaysHoursInfoDialog(options) {
+    var d = $("#dialog-hook");
+    d.html(options.html);
+
+    var dialogOptions = _.extend(
+    {autoOpen: false,
+     height: 540,
+     width: 380,
+     modal: true,
+     buttons: {
+             "Submit": function() {
+         var f = d.find("#form");
+         var userInfo = varFormGrabber(f);
+         options.on_submit(userInfo);
+         d.dialog('close');
+             },
+             "Close": function() {
+         d.dialog('close');
+             }
+     },
+     title:options.title
+    },
+    _.clone(options));
+
+    d.dialog(dialogOptions);
+    d.dialog("open");
+};
+
+var days_and_hours_table_view =
+    Backbone.View.extend({
+        render:function(list){
+        var view = this,
+        template = view.options.template,
+        el = view.$el,
+        html = ich[template]({list:list});
+        el.html(html);
+        }
+    });
+    
+var days_and_hours_view =
+    Backbone.View.extend({
+        initialize:function() {
+            var view = this;
+            view.day_time_table = new days_and_hours_table_view({template:'daySelectionTable_TMP'});
+            view.list_days_hours = [];
+        },
+        events:{
+        'click #btnAdd':'show_dialog'
+        },
+        setup:function() {
+            var view = this;
+            view.$el.find('input:button,input:submit').button();
+            view.day_time_table.setElement('#days_and_hours_table');
+            view.day_time_table.render(view.list_days_hours);
+            this.trigger("update_list");
+        },
+        show_dialog:function(){
+            var view = this;
+            var html = ich.daySelectionDialog_TMP({});
+            var options = {html:html, title:"input day/hour"};
+            $(html).find(".startTime").first()
+               .timepicker({
+                       timeOnly: true,
+                       showButtonPanel: false
+                   });
+             $(html).find(".endTime").first()
+               .timepicker({
+                       timeOnly: true,
+                       showButtonPanel: false
+                   });
+            inputDaysHoursInfoDialog(options);
+        }
+    });
+
 var createCampaignRouter =
     new (Backbone.Router.extend(
              {routes: {
               "createcampaigns":"_setup"
               },
+              initialize:function() {
+                var router = this;
+                router.startDate = (new Date());
+                router.endDate = (new Date()).addDays(1);
+                router.list_days_hours=[];
+                router.views = {
+                    start_date_picker : new date_picker_view({date:router.startDate}),
+                    end_date_picker : new date_picker_view({date:router.endDate}),
+                    days_and_hours : new days_and_hours_view()
+                };
+                router.views.start_date_picker.on('date-change',router.update_start_date,router);
+                router.views.end_date_picker.on('date-change',router.update_end_date,router);
+                router.views.end_date_picker.on('update_list',router.update_list_days_hours,router);
+              },
               _setup:function(){
                 console.log("campaign manager");
+                var router = this;
                 $("#main").html(ich.createCampaign_TMP({}));
+                MultiFileSetup(); //enable fileselection
+                
+                router.views.start_date_picker.setElement("#dateFrom").setup();
+                router.views.end_date_picker.setElement("#dateTo").setup();
+                router.views.days_and_hours.setElement("#main").setup();
+                
                 var stores_db = cdb.db('terminals_rt7');
                 var reigion_v = cdb.view('app/country_prov_city_postal_code');
-            
-                //put a date picker on the start and end date inputs
-                $("#startDate, #endDate").datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 numberOfMonths: 3});
             
                 //setup logic (chained callbacks)
                 countriesSetup(reigion_v,stores_db);//(provincesSetup(reigion_v,stores_db)(function(){console.log("done");}));
@@ -444,4 +535,17 @@ var createCampaignRouter =
                 //     (finalSetup));
           
           
-              }}));
+              },
+              show_dialog:function() {
+                alert("aaa");  
+              },
+              update_start_date:function(date) {
+                  this.startDate = date;    
+              },
+              update_end_date:function(date) {
+                  this.endDate = date;
+              },
+              update_list_days_hours:function(list) {
+                  this.list_days_hours = list;
+              }
+              }));

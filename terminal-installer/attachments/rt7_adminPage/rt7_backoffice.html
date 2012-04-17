@@ -38,14 +38,17 @@
     
     <!-- campain manager -->
     <script language="javascript" type="text/javascript" src="../lib/jquery-ui-timepicker-addon.js"></script>
-    <script language="javascript" type="text/javascript" src="../lib/jquery.MultiFile.js"></script>
-    <script language="javascript" type="text/javascript" src="../lib/jquery.MultiFile.pack.js"></script>
+    <!--<script language="javascript" type="text/javascript" src="../lib/jquery.form.js"></script>-->
+    <!--<script language="javascript" type="text/javascript" src="../lib/jquery.MetaData.js"></script>-->
+    <script language="javascript" type="text/javascript" src="../lib/jquery.MultiFile_F.js"></script>
+    <!--<script language="javascript" type="text/javascript" src="../lib/jquery.MultiFile.pack.js"></script>-->
+    <!--<script language="javascript" type="text/javascript" src="../lib/jquery.blockUI.js"></script>-->
     <script language="javascript" type="text/javascript" src="../lib/jquery.multiselect.js"></script>
     <script language="javascript" type="text/javascript" src="../lib/js2form.js"></script>
     <script language="javascript" type="text/javascript" src="../lib/form2object.js"></script>
-    <script language="javascript" type="text/javascript" src="../lib/multifile.js"></script>
+    <!--<script language="javascript" type="text/javascript" src="../lib/multifile.js"></script>-->
     <script language="javascript" type="text/javascript" src="../lib/vertebrae.js"></script>
-    
+    <script language="javascript" type="text/javascript" src="../reporting/helpers/views.js"></script>
     
     <script language="javascript" type="text/javascript" src="../lib/TerritoryUser.js"></script>
     <script language="javascript" type="text/javascript" src="../rt7_adminPage/company management/heroburger_terminal.js"></script>
@@ -170,7 +173,7 @@
     </script>
     
     <script id="menuButton_P" class="partial" type="text/html">
-      <button  class="{{>commonButtonClasses_P}}" role="button" aria-disabled="false" 
+      <button class="{{>commonButtonClasses_P}}" role="button" aria-disabled="false" 
 	       onClick="javascript:window.location.href ='#mainMenus';">
 	<span class="ui-button-text">Main Menu</span>
       </button>
@@ -1048,10 +1051,54 @@
       </select>
     </label>
     
-    <label>start <input class="startTime" type="text" size=10 name="days_and_hours[{{index}}].time.start" value="" var_type="time" /></label>
-    <label>end <input class="endTime" type="text" size=10 name="days_and_hours[{{index}}].time.end" value="" var_type="time" /></label>
-    <label> 24 hours <input class="checkAlltimes" type="checkbox" name="all_times"/></label>
+    <label style="display: inline;">start <input style="display: inline;" class="startTime" type="text" size=10 name="days_and_hours[{{index}}].time.start" value="" var_type="time" /></label>
+    <label style="display: inline;">end <input style="display: inline;" class="endTime" type="text" size=10 name="days_and_hours[{{index}}].time.end" value="" var_type="time" /></label>
+    <label style="display: inline;"> 24 hours <input style="display: inline;" class="checkAlltimes" type="checkbox" name="all_times"/></label>
       </li>
+    </script>
+    
+    <script id="daySelectionDialog_TMP" type="text/html">
+        <form>
+        <label>DAY</label>
+        <label>ALL <input type="checkbox" value="ALL" /></label>
+        <label style="display: inline;">MON <input style="display: inline;" type="checkbox" value="MON" var_type="checkbox" /></label>
+        <label style="display: inline;">TUE <input style="display: inline;" type="checkbox" value="TUE" var_type="checkbox" /></label>
+        <label style="display: inline;">WED <input style="display: inline;" type="checkbox" value="WED" var_type="checkbox" /></label>
+        <label style="display: inline;">THU <input style="display: inline;" type="checkbox" value="THU" var_type="checkbox" /></label>
+        <label style="display: inline;">FRI <input style="display: inline;" type="checkbox" value="FRI" var_type="checkbox" /></label>
+        <label style="display: inline;">SAT <input style="display: inline;" type="checkbox" value="SAT" var_type="checkbox" /></label>
+        <label>SUN <input type="checkbox" value="SUN" var_type="checkbox" /></label>
+    
+        <label style="display: inline;">start <input style="display: inline;" class="startTime" type="text" size=10 value="" var_type="time" /></label>
+        <label style="display: inline;">end <input style="display: inline;" class="endTime" type="text" size=10 value="" var_type="time" /></label>
+        <label style="display: inline;"> 24 hours <input style="display: inline;" class="checkAlltimes" type="checkbox" name="all_times"/></label>
+        </form>
+    </script>
+    
+    <script id="daySelectionTable_TMP" type="text/html">
+        <table class="reportstable">
+            <thead>
+                <tr>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#list}}
+                <tr>
+                <td>{{day}}</td>
+                <td>{{startTime}} ~ {{endTime}}</td>
+                <td>{{>quickDeleteViewButton_P}}</td> <!--TODO:id="del-{{_id}}"-->
+                </tr>
+                {{/list}}
+                {{^list}}
+                <tr>
+                <td align="center" colspan="3">Empty</td>
+                </tr>
+                {{/list}}
+            </tbody>
+        </table>
     </script>
     
     <script id="option_TMP" type="text/html">
@@ -1097,76 +1144,69 @@
       {{>menuButton_P}}
       <hr/>
       <form id="campaignForm" action="javascript:test()">
-      <dl>
-    <dt><label for="_id">Campaign ID</label></dt>
-    <dd><input id="_id" type="text" name="_id"/></dd>
-      </dl>
-      <dl>
-    <dt>Description</dt>
-    <dd><input id="description" type="text" name="description"/></dd>
-      </dl>
-      <dl>
-    <dt>Air Date</dt>
-    <dd>
-      <label>from <input id="startDate" type="text" name="time.start" var_type="date" value="" size=10/></label>
-      <label>to <input id="endDate" type="text" name="time.end" var_type="date" value="" size=10/></label>
-    </dd>
-      </dl>
-      <dt><label for="advertiser">Adevertiser</label></dt>
-      <dd><input id="advertiser" type="text" name="advertiser"/></dd>
-
-      <dl>
-    <dt><label for="salesperson">Salespoerson</label></dt>
-    <dd><input id="salesperson" type="text" name="salesperson"/></dd>
-      </dl>
-      <dl>
-    <dt><label for="type">Presentation type</label></dt>
-    <dd>
-      <label>Captive <input id="radioCaptive" type="radio" name="presentation_type" value="captive"/></label>
-      <label>Passive <input id="radioPassive" type="radio" name="presentation_type" value="passive"/></label>
-    </dd>
-      </dl>
-      <dl>
-    <dt><label for="images"> Images </label></dt>
-    <dd><input id="filechooser" type="file" class="multi" ></dd>
-      </dl>
-      <dl>
-    <dt>Broadcast hours</dt>
-      <dd>
-        <ul id="days_and_hours_list"></ul>
-      </dd>
-      </dl>
-      <div>
-    <input type="button" id="btnAdd" value="add days/hours" />
-    <input type="button" id="btnDel" value="remove days/hours" />
-      </div>
-
-<!--
-      <dl>
-    <dt>Broadcast locations</dt>
-    <label>All Terminals <input type="checkbox" name="_all_terminals"/></label>
-    
-    <input type="hidden" id="for_terminals_created_before" name="for_terminals_created_before" value="" var_type="date"/>
-    <label>Future <input type="radio" name="_for_terminals" value="future"/></label>    
-    <label>Current <input type="radio" name="_for_terminals" value="current"/> </label> 
-      </dl>
-
-      <div>
-    <input type="button" id="btnAddTerminal" value="add terminals" />
-    <input type="button" id="btnDelTerminal" value="remove terminals" />
-      </div>
--->
-      <dl>
-    <dt>Broadcast Regions</dt>
-    <dd>
-          <select id="countries" type="select"  name="countries" multiple="multiple" size=8></select>
-          <select id="provinces" type="select"  name="provinces" multiple="multiple" size=8></select>
-          <select id="cities" type="select"  name="cities" multiple="multiple" size=8></select>
-          <select id="postalCodes" type="select"  name="postalCodes" multiple="multiple" size=8></select>
-    </dd>   
-      </dl>
-      <input type="submit" />
+        <ul>
+            <li>
+                <label style="display: inline;">Campaign ID : </label>
+                <input style="display: inline;" id="_id" type="text" name="_id" var="_id" />
+            </li>
+            <br />
+            <li>
+                <label style="display: inline;">Description : </label>
+                <input style="display: inline;" id="description" type="text" name="description" var="description" />
+            </li>
+            <br />
+            <li>
+                <label>Air Date </label>
+                <label style="display: inline;">from : <input style="display: inline;" id="dateFrom" type="text" name="time.start" var="time.start" var_type="date" value="" size=10/></label>
+                <label style="display: inline;">to <input style="display: inline;" id="dateTo" type="text" name="time.end" var="time.end" var_type="date" value="" size=10/></label>
+            </li>
+            <br />
+            <li>
+                <label style="display: inline;">Adevertiser</label>
+                <input style="display: inline;" id="advertiser" type="text" name="advertiser" var="advertiser" />
+            </li>
+            <br />
+            <li>
+                <label style="display: inline;">Salespoerson</label>
+                <input style="display: inline;" id="salesperson" type="text" name="salesperson" var="salesperson" />
+            </li>
+            <br />
+            <li>
+                <label>Presentation type</label>
+                <label style="display: inline;">Captive <input style="display: inline;" id="radioCaptive" type="radio" name="presentation_type" value="captive" /></label>
+                <label style="display: inline;">Passive <input style="display: inline;" id="radioPassive" type="radio" name="presentation_type" value="passive" /></label>
+            </li>
+            <br />
+            <li>
+                <label> Images </label>
+                <input id="multifilechooser" type="file" class="multi" accept="gif/bmp/png" maxlength="5" />
+            </li>
+            <br />
+            <li>
+                <label>Broadcast hours</label>
+                <ul id="days_and_hours_list"></ul>
+                <div id="days_and_hours_table"></div>
+                <br />
+                <div style="display: inline;">
+                    <input style="display: inline;" type="button" id="btnAdd" value="add days/hours" />
+                    <input style="display: inline;" type="button" id="btnDel" value="remove days/hours" />
+               </div>
+            </li>
+            <br />
+            <li>
+                <label>Broadcast Regions</label>
+                <select id="countries" type="select"  name="countries" multiple="multiple" size=8></select>
+                <select id="provinces" type="select"  name="provinces" multiple="multiple" size=8></select>
+                <select id="cities" type="select"  name="cities" multiple="multiple" size=8></select>
+                <select id="postalCodes" type="select"  name="postalCodes" multiple="multiple" size=8></select>
+            </li>
+            <br />
+            <li>
+                <input type="submit" />
+            </li>
+        </ul> 
     </form>
+    <div id="dialog-hook"></div>
       <hr />
       </div>
     </script>
