@@ -629,7 +629,6 @@ companiesView =
 		var view = this;
 		var company = Companies.getModelById(id);
 		var companyJSON = company.toJSON();
-		
 		var db_users = cdb.db("users");
 		
         db_users.openDoc(("org.couchdb.user:")

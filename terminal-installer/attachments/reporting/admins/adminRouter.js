@@ -21,8 +21,9 @@ var current_user_info_view =
 	    }
 	});
 
+/*
 var company_tree_navigation_view =
-    Backbone.View.extend(
+   Backbone.View.extend(
 	{
 	    events:{
 		"click li":"view_entity"
@@ -38,6 +39,7 @@ var company_tree_navigation_view =
 	    }
 	});
 	
+*/
 var customer_admin_add_user_view =
     Backbone.View.extend(
 	{
@@ -77,10 +79,9 @@ var menuAdminUsersView =
 		    .sortBy(function(item){return new Date(item.creationdate);})
 		    .reverse()
 		    .value();
-		
-		$(view.$el).html(ich.adminUsersInfotable_TMP({list:user_list}));
-		$('button').button();
 
+		view.$el.html(ich.adminUsersInfotable_TMP({list:user_list}));
+		$('button').button();
 	    }
 	});
 
@@ -128,8 +129,7 @@ var adminRouter =
 		 },
 		 setup:function(){
 		     var router = this;
-		     var breadCrumb = autoBreadCrumb();
-		     var html = ich[router.template](_.extend({startPage:ReportData.startPage},breadCrumb));
+		     var html = ich[router.template](_.combine(ReportData,autoBreadCrumb()));
     		     $("#main").html(html);
 		     router.views.current_user.setElement("#current_user");
 		     router.current_user.set(ReportData.currentUser);
@@ -335,7 +335,7 @@ var adminRouter =
                      report);
                  }
 		     }
-		     
+
 		 },
 		 edit_user:function(user_id){
 		     console.log("edit user: " + user_id);
