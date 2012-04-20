@@ -41,7 +41,7 @@
     <script language="javascript" type="text/javascript" src="../lib/jquery-ui-timepicker-addon.js"></script>
     <!--<script language="javascript" type="text/javascript" src="../lib/jquery.form.js"></script>-->
     <!--<script language="javascript" type="text/javascript" src="../lib/jquery.MetaData.js"></script>-->
-    <script language="javascript" type="text/javascript" src="../lib/jquery.MultiFile_F.js"></script>
+    <script language="javascript" type="text/javascript" src="../lib/jquery.MultiFile.js"></script>
     <!--<script language="javascript" type="text/javascript" src="../lib/jquery.MultiFile.pack.js"></script>-->
     <!--<script language="javascript" type="text/javascript" src="../lib/jquery.blockUI.js"></script>-->
     <script language="javascript" type="text/javascript" src="../lib/jquery.multiselect.js"></script>
@@ -1038,26 +1038,6 @@
     <!----------------------------------------------------------------------------------------------------->
     
     <!---------------------------------- CAMPAIGN MANAGER ------------------------------------------------->
-    <script id="daySelection_TMP" type="text/html">
-      <li index={{index}}>
-    <label>DAY
-      <select type="select"  name="days_and_hours[{{index}}].day" multiple="multiple" size=8>
-        <option value="MON">MON</option>
-        <option value="TUE">TUE</option>
-        <option value="WED">WED</option>
-        <option value="THU">THU</option>
-        <option value="FRI">FRI</option>
-        <option value="SAT">SAT</option>
-        <option value="SUN">SUN</option>
-      </select>
-    </label>
-    
-    <label style="display: inline;">start <input style="display: inline;" class="startTime" type="text" size=10 name="days_and_hours[{{index}}].time.start" value="" var_type="time" /></label>
-    <label style="display: inline;">end <input style="display: inline;" class="endTime" type="text" size=10 name="days_and_hours[{{index}}].time.end" value="" var_type="time" /></label>
-    <label style="display: inline;"> 24 hours <input style="display: inline;" class="checkAlltimes" type="checkbox" name="all_times"/></label>
-      </li>
-    </script>
-    
     <script id="daySelectionDialog_TMP" type="text/html">
         <form>
         <label>DAY</label>
@@ -1133,27 +1113,27 @@
     
     <script id="locations_tree_TMP" type="text/html">
         <ul>
-        <li>
+        <li location_type='top' name='ALL'>
         <a>ALL</a>
             <ul>
             {{#country}}
-            <li>
+            <li id='{{id}}' location_type='country' name='{{name}}'>
             <a>{{name}}</a>
                 <ul>
                 {{#province}}
-                <li>
+                <li id='{{id}}' location_type='province' name='{{name}}'>
                 <a>{{name}}</a>
                     <ul>
                     {{#city}}
-                    <li>
+                    <li id='{{id}}' location_type='city' name='{{name}}'>
                     <a>{{name}}</a>
                         <ul>
                         {{#areaCode}}
-                        <li>
+                        <li id='{{id}}' location_type='areaCode' name='{{name}}'>
                         <a>{{name}}</a>
                             <ul>
                             {{#postalCode}}
-                            <li>
+                            <li id='{{id}}' location_type='postalCode' name='{{name}}'>
                             <a>{{name}}</a>
                             </li>
                             {{/postalCode}}
@@ -1202,21 +1182,28 @@
       {{/optGroups}}
     </script>
 
-    <script id="countrySelection_TMP" type="text/html">
-    <select id="countries" type="select"  name="countries" multiple="multiple" size=8>
-      {{#countries}}
+    <script id="companySelection_TMP" type="text/html">
+    <select id="companies" type="select"  name="companies" multiple="multiple" size=8>
+      {{#companies}}
       <option value={{.}}>{{.}}</option>
-      {{/countries}}
+      {{/companies}}
     </select>
     </script>
     
+    <script id="upload_dialog_TMP" type="text/html">
+        <form id="upload_image" method="post">
+            <input id="filechooser" type="file" accept="gif/bmp/png" name="_attachments" />
+        </form>    
+    </script>
+    
+        
     <script id="createCampaign_TMP" type="text/html">
       {{>mainheader}}
       <div style="width:1000px;margin:20px auto;padding:20px;background-color:#fff;font-size:13px;font-weight:bold;border-radius:20px;">
       <h1>Create Campaign</h1>
       {{>menuButton_P}}
       <hr/>
-      <form id="campaignForm" action="javascript:test()">
+      <form id="campaignForm">
         <ul>
             <li>
                 <label style="display: inline;">Campaign ID : </label>
@@ -1240,19 +1227,19 @@
             </li>
             <br />
             <li>
-                <label style="display: inline;">Salespoerson</label>
+                <label style="display: inline;">Salesperson</label>
                 <input style="display: inline;" id="salesperson" type="text" name="salesperson" var="salesperson" />
             </li>
             <br />
             <li>
                 <label>Presentation type</label>
-                <label style="display: inline;">Captive <input style="display: inline;" id="radioCaptive" type="radio" name="presentation_type" value="captive" /></label>
-                <label style="display: inline;">Passive <input style="display: inline;" id="radioPassive" type="radio" name="presentation_type" value="passive" /></label>
+                <label style="display: inline;">Captive <input style="display: inline;" id="radioCaptive" type="radio" name="presentation_type" value="captive" checked="checked" class="presentation_type" /></label>
+                <label style="display: inline;">Passive <input style="display: inline;" id="radioPassive" type="radio" name="presentation_type" value="passive" class="presentation_type" /></label>
             </li>
             <br />
             <li>
                 <label> Images </label>
-                <input id="multifilechooser" type="file" class="multi" accept="gif/bmp/png" maxlength="5" />
+                <input id="multifilechooser" type="file" accept="gif/bmp/png" />
             </li>
             <br />
             <li>
@@ -1268,46 +1255,28 @@
             <li>
                 <label>Broadcast Regions</label>
                 <div id="location_and_company">
+                All Terminals <input style="display: inline;" type="checkbox" id="chkallterminals" />
                 <table width="100%">
                     <tr>
-                        <td>
+                        <td width="50%">
                             <div id="locationstree"></div>
                         </td>
-                        <td>
+                    </tr>
+                    <tr>
+                       <td width="50%">
                             <div id="companylist"></div>
-                        </td>
+                        </td> 
                     </tr>
                 </table>
                 </div>
-                <!--
-                <select id="countries" type="select"  name="countries" multiple="multiple" size=8></select>
-                <select id="provinces" type="select"  name="provinces" multiple="multiple" size=8></select>
-                <select id="cities" type="select"  name="cities" multiple="multiple" size=8></select>
-                <select id="postalCodes" type="select"  name="postalCodes" multiple="multiple" size=8></select>
-                -->
             </li>
-            <!--
-            TODO : example in jscode, $("jstreetest").jstree();    
-            <div id="jstreetest">
-                <ul>
-                    <li><a>item1</a></li>
-                    <li><a>item2</a></li>
-                    <li>
-                        <a>item3</a>
-                        <ul>
-                            <li><a>item3-1</a></li>
-                            <li><a>item3-2</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            -->
             <br />
             <li>
-                <input type="submit" />
+                <input id="btnsubmit" type="button" value="Submit" />
             </li>
         </ul> 
     </form>
+    <div id="dialog-form"></div>
     <div id="dialog-hook"></div>
       <hr />
       </div>

@@ -9,6 +9,8 @@
  ###
 */
 
+//Wrap as a function
+//function MultiFileSetup() { 
 /*# AVOID COLLISIONS #*/
 ;if(window.jQuery) (function($){
 /*# AVOID COLLISIONS #*/
@@ -246,7 +248,7 @@
             // Handle error
             MultiFile.error(ERROR);
 												
-            // 2007-06-24: BUG FIX - Thanks to Adrian Wróbel <adrian [dot] wrobel [at] gmail.com>
+            // 2007-06-24: BUG FIX - Thanks to Adrian Wrï¿½bel <adrian [dot] wrobel [at] gmail.com>
             // Ditch the trouble maker and add a fresh new element
             MultiFile.n--;
             MultiFile.addSlave(newEle[0], slave_count);
@@ -471,6 +473,11 @@
 		
 		// name to use for newly created elements
 		namePattern: '$name', // same name by default (which creates an array)
+         /*master name*/ // use $name
+         /*master id  */ // use $id
+         /*group count*/ // use $g
+         /*slave count*/ // use $i
+									/*other      */ // use any combination of he above, eg.: $name_file$i
 		
 		// STRING: collection lets you show messages in different languages
 		STRING: {
@@ -534,3 +541,4 @@
 /*# AVOID COLLISIONS #*/
 })(jQuery);
 /*# AVOID COLLISIONS #*/
+//};
