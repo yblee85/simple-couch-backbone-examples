@@ -67,62 +67,6 @@ var testData = {
 };
 
 
-function inputDaysHoursInfoDialog(options) {
-    var d = $("#dialog-hook");
-    d.html(options.html);
-
-    var dialogOptions = _.extend(
-    {autoOpen: false,
-     height: 390,
-     width: 350,
-     modal: true,
-     buttons: {
-             "Submit": function() {
-         var f = d.find("form");
-         var dayhourInfo = varFormGrabber(f);
-         options.success(dayhourInfo);
-         d.dialog('close');
-             },
-             "Close": function() {
-         d.dialog('close');
-             }
-     },
-     title:options.title
-    },
-    _.clone(options));
-
-    d.dialog(dialogOptions);
-    d.dialog("open");
-};
-
-function showUploadImageDialog(options) {
-    var d = $("#dialog-form");
-    d.html(options.html);
-    
-    var dialogOptions = _.extend(
-    {autoOpen: false,
-     height: 390,
-     width: 350,
-     modal: true,
-     buttons: {
-             "Submit": function() {
-                 console.log("b");
-                var d = data;
-                console.log(d);
-                
-             },
-             "Close": function() {
-                d.dialog('close');
-             }
-     },
-     title:options.title
-    },
-    _.clone(options));
-
-    d.dialog(dialogOptions);
-    d.dialog("open");   
-};
-
 var days_and_hours_table_view =
     Backbone.View.extend({
         render:function(list){
@@ -138,7 +82,6 @@ var days_and_hours_table_view =
                             };
                         })
                         .value();
-        console.log(for_TMP);
         template = view.options.template;
         el = view.$el;
         html = ich[template]({list:for_TMP});
@@ -206,7 +149,6 @@ var days_and_hours_view =
             var view = this;
             view.day_time_table = new days_and_hours_table_view({template:'daySelectionTable_TMP'});
             view.list_days_hours = [];
-            //view.list_days_hours.on('change', function...);
         },
         events:{
         'click #btnAdd':'show_dialog',
@@ -215,10 +157,10 @@ var days_and_hours_view =
         },
         setup:function() {
             var view = this;
+            view.list_days_hours = [];
             view.$el.find('input:button').button();
             view.day_time_table.setElement('#days_and_hours_table');
             view.day_time_table.render(view.list_days_hours);
-            this.trigger("update_list");
         },
         show_dialog:function(){
             var view = this;
@@ -286,7 +228,6 @@ var days_and_hours_view =
                     console.log(convertedList);
                     view.list_days_hours = view.list_days_hours.concat(convertedList);
                     view.day_time_table.render(view.list_days_hours);
-                    view.update_list_in_router();                    
                 },
                 error:function() {
                     
@@ -301,16 +242,11 @@ var days_and_hours_view =
                 return item == view.list_days_hours[Number(indexId)];
             });
             view.day_time_table.render(view.list_days_hours);
-            view.update_list_in_router();  
         },
         delete_all_list:function() {
             var view = this;
             view.list_days_hours = [];
             view.day_time_table.render(view.list_days_hours);
-            view.update_list_in_router();    
-        },
-        update_list_in_router:function() {
-            this.trigger("update_list");
         }
     });
 
@@ -414,6 +350,8 @@ var location_and_company_view =
         },
         setup:function() {
             var view = this;
+            view.listLocationsCompany = [];
+            view.locationsTree=[];
             $.couch.db("terminals_rt7").view("app/country_prov_city_area_postal_code_company", {
                 success:function(resp) {
                     function transformListToTree(listLocCom) {
@@ -504,7 +442,6 @@ var location_and_company_view =
                     
                    
                     var keys = _.pluck(resp.rows,"key");
-                    console.log(keys);
                     view.listLocationsCompany = _.map(keys,function(listLocCom){
                         return {
                             country:listLocCom[0],
@@ -571,6 +508,51 @@ var location_and_company_view =
         }
     });
 
+var add_images_view =
+    Backbone.View.extend({
+        initialize:function() {
+            
+        },
+        events:{
+            'click #btnaddimage' : 'show_add_image_dialog',
+            'click #btnprev' : 'render_prev_page',
+            'click #btncomplete' : 'complete_campaign',
+            'click .del' : 'delete_image'
+        },
+        show_add_image_dialog:function(){
+            this.trigger('show_add_image_dialog');
+        },
+        setup:function() {
+            var view = this;
+            $("#btnaddimage").button();
+            $("#btnprev").button();
+            $("#btncomplete").button();
+            $("#btncancel").button();
+            view.render_table();
+        },
+        render_table:function(images){
+            var view = this;
+            var for_TMP = _.map(images,function(item){
+                return _.extend({_id:item.file},item);
+            });
+            var html = ich.imagesTable_TMP({list:for_TMP});
+            $("#images_table").html(html);
+            
+            $(view.$el).find('.del').button();
+            
+        },
+        render_prev_page:function() {
+            this.trigger('render_prev_page');
+        },
+        complete_campaign:function(){
+            this.trigger('complete_campaign');
+        },
+        delete_image:function(event){
+            var file = (event.currentTarget.id).replace("del-","");
+            this.trigger('delete_image',file);
+        }
+    });
+
 var createCampaignRouter =
     new (Backbone.Router.extend(
              {routes: {
@@ -580,36 +562,57 @@ var createCampaignRouter =
                 var router = this;
                 router.startDate = (new Date());
                 router.endDate = (new Date()).addDays(1);
-                router.list_days_hours=[];
+                
                 router.views = {
+                    // campaign page part views
                     start_date_picker : new date_picker_view({date:router.startDate}),
                     end_date_picker : new date_picker_view({date:router.endDate}),
                     days_and_hours : new days_and_hours_view(),
                     days_and_hours_dialog : new days_and_hours_dialog_view(), 
-                    location_and_company : new location_and_company_view()
+                    location_and_company : new location_and_company_view(),
+                    
+                    // add image page part view
+                    add_images_view : new add_images_view()
                 };
+                
+                // campaign page part bind 
                 router.views.start_date_picker.on('date-change',router.update_start_date,router);
                 router.views.end_date_picker.on('date-change',router.update_end_date,router);
-                router.views.days_and_hours.on('update_list',router.update_list_days_hours,router);
                 router.views.days_and_hours.on('initialize_timepicker_in_dialog',router.initialize_timepicker_in_dialog,router);
+                
+                // add image page part bind
+                router.views.add_images_view.on('show_add_image_dialog',router.show_add_image_dialog,router);
+                router.views.add_images_view.on('render_prev_page',router.render_prev_page,router);
+                router.views.add_images_view.on('complete_campaign',router.complete_campaign,router);
+                router.views.add_images_view.on('delete_image',router.delete_image,router);
               },
               _setup:function(){
                 console.log("campaign manager");
                 var router = this;
+                //router.currentCampaignDoc ={};
+                router.currentCampaignModel = new (couchDoc.extend({db:"campaigns"}))();
                 $("#main").html(ich.createCampaign_TMP({}));
-                //$("#multifilechooser").MultiFile();
                 
+                // campaign page part set element and setup
                 router.views.start_date_picker.setElement("#dateFrom").setup();
                 router.views.end_date_picker.setElement("#dateTo").setup();
                 router.views.days_and_hours.setElement("#days_and_hours").setup();
                 router.views.days_and_hours_dialog.setElement("#dialog-hook");
                 router.views.location_and_company.setElement("#location_and_company").setup();
                 
-                $("#btnsubmit").button().click(function(){
-                    //router.createCampaign();
-                    var html = ich.upload_dialog_TMP();
-                    var options = _.extend({html:html},{title:"upload"});
-                    showUploadImageDialog(options);
+                // add image page part set element and setup
+                router.views.add_images_view.setElement("#next_page_in_tmp").setup();
+                
+                $("#next_page_in_tmp").hide();
+                $("#btnnext").button().click(function(){
+                    router.createCampaign();
+                });
+                $("#btncancel").button().click(function(){
+                    router.cancel_campaign();
+                });
+                $("#btnmainmenu").button().click(function(){
+                    router.cancel_campaign();
+                    window.location.href ='#mainMenus';
                 });
               },
               createCampaign:function(){
@@ -617,13 +620,19 @@ var createCampaignRouter =
                   var formData = varFormGrabber($("#campaignForm"));
                   var isAllday_time =$("#chkalldaysandhours").is(":checked");
                   var isAllTerminals =$("#chkallterminals").is(":checked");
+                  var days_and_hours = router.views.days_and_hours.list_days_hours;
                   
+                  if(_.isEmpty(formData._id)){
+                      alert("Campaign ID is empty");
+                      return undefined;
+                  }                  
                   _.extend(formData,{
                                         presentation_type:$(".presentation_type:checked").val(),
                                         name : formData._id,
-                                        days_and_hours:router.list_days_hours,
+                                        days_and_hours:days_and_hours,
                                         all_times:isAllday_time,
-                                        all_days:isAllday_time
+                                        all_days:isAllday_time,
+                                        images : []
                                     });
                   
                   _.extend(formData,{
@@ -634,12 +643,12 @@ var createCampaignRouter =
                   });
                   
                   if(!isAllday_time){
-                      if(_.size(router.list_days_hours)==0){
+                      if(_.size(days_and_hours)==0){
                         alert("at least one day/time!");
                         return undefined;    
                       }
                       
-                      var isAllDays = _(router.list_days_hours).chain().pluck("day").uniq().size()==7;
+                      var isAllDays = _(days_and_hours).chain().pluck("day").uniq().size()==7;
                       _.extend(formData,{all_days:isAllDays});          
                   } 
                   
@@ -668,40 +677,120 @@ var createCampaignRouter =
                       _.extend(formData,{locations:_.flatten(locations)});                      
                   }
                   
-                  console.log("is this right???");
                   console.log(formData);
                   var db_campaigns = $.couch.db("campaigns");
-                  db_campaigns.openDoc(formData._id,{
-                      success:function(){
-                          alert("there's same campaign id exists!");
-                      },
-                      error:function(){
-                          db_campaigns.saveDoc(formData,{
-                              success:function(doc){
-                                  doc._attachments = $("multifilechooser").val();
-                                  /*
-                                  $.ajax({
-                                      type:"Put",
-                                      url:" /campaigns/" + doc._id + "/" + $("#multifilechooser").val() + "?rev=" + doc._rev,
-                                      data:
-                                  });
-                                  */
-                              },
-                              error:function() {
-                                  alert("Error Occured while saving campaign");
+                  if($("#_id").attr("disabled")){
+                      // update
+                      router.currentCampaignModel.save(formData,{
+                          success:function(model){
+                              router.renderAddImagePage();
+                          },
+                          error:function(){}
+                      });
+                  } else {
+                     // create doc
+                     db_campaigns.openDoc(formData._id,{
+                          success:function(doc){
+                              alert("there's same campaign id exists!");
+                          },
+                          error:function(){
+                             router.currentCampaignModel.save(formData,{
+                                 success:function(model){
+                                     console.log(arguments);
+                                     router.renderAddImagePage();
+                                 },
+                                 error:function(){}
+                             });
+                          }
+                      }); 
+                     
+                  }
+              },
+              show_add_image_dialog:function(){
+                  var router = this;
+                  var currentCampaignJSON = router.currentCampaignModel.toJSON();
+                  var html = ich.upload_dialog_TMP({_rev:currentCampaignJSON._rev});
+                  var options = _.extend({html:html},{title:"upload",
+                                                      campaignDoc:currentCampaignJSON,
+                                                      success:function(resp){
+                                                          console.log("success functions");
+                                                          console.log(resp);
+                                                          router.add_image_to_campaign(resp, router);
+                                                      }});
+                  showUploadImageDialog(options);
+              },
+              renderAddImagePage:function(){
+                  $("#first_page_in_tmp").hide();
+                  $("#next_page_in_tmp").show();
+              },
+              render_prev_page:function(){
+                  $("#first_page_in_tmp").show();
+                  $("#_id").attr("disabled",true);
+                  $("#next_page_in_tmp").hide();
+              },
+              add_image_to_campaign:function(resp, router){
+                  router.currentCampaignModel.fetch({
+                      success:function(model){
+                          var file = resp.file;
+                          if(model.get("images")==undefined) {
+                              model.set("images",[]);
+                          }
+                          
+                          var newImages = (model.get("images")).concat({file:file});
+                          model.set("images",newImages);
+                          model.save({},{
+                              success:function(model){
+                                  router.render_images_table(model.get("images"),router);
                               }
                           });
-                      }
+                      },
+                      error:function(){}
                   });
-              },              
+              },
+              render_images_table:function(images,router){
+                  router.views.add_images_view.render_table(images);
+              },
+              complete_campaign:function(){
+                  var router = this;
+                  router._setup();
+              },
+              cancel_campaign:function(){
+                  var router = this;
+                  //delete(remove) doc / model and reset
+                  if(_.isNotEmpty(router.currentCampaignModel.get('_id'))) {
+                      router.currentCampaignModel.destroy({
+                          success:function(){
+                              router._setup();
+                          }
+                      });
+                  } else {
+                      router._setup();
+                  }
+              },
+              delete_image:function(filename){
+                  //console.log(arguments);
+                  var router = this;
+                  var campModel = router.currentCampaignModel;
+                  var newImages = _.reject(campModel.get('images'),function(item){
+                      return item.file == filename;
+                  });
+                  
+                  var newAttach = _.selectKeys(campModel.get('_attachments'),_.pluck(newImages,'file'));
+                  
+                  campModel.set("images",newImages);
+                  campModel.set("_attachments",newAttach);
+                  
+                  campModel.save({},{
+                      success:function(model){
+                          router.render_images_table(model.get("images"),router);
+                      }
+                  });                  
+              },
               update_start_date:function(date) {
                   this.startDate = date;    
               },
               update_end_date:function(date) {
                   this.endDate = date;
-              },
-              update_list_days_hours:function() { // TODO : abundant. i don't even know why i made this, maybe i want every info in this router.
-                  this.list_days_hours = this.views.days_and_hours.list_days_hours;
               },
               initialize_timepicker_in_dialog:function(){
                   this.views.days_and_hours_dialog.initializeTimePicker();    
