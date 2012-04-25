@@ -439,8 +439,8 @@ var adminRouter =
 					    ]
 					}
 				    };
-				})
-			 .default(undefined);
+				});
+			 //.default(undefined); //TODO : throw an error in IE7
 
 		     var user_creation_rules =  generate_add_user_dialog_blueprint(ReportData,router.current_entity_id);
 		     if(_.isUndefined(user_creation_rules)){

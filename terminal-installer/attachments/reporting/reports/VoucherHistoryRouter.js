@@ -3,7 +3,7 @@ var voucherHistoryRouter =
 				    routes: {
 					"menuReports/companyReportVouchersHistory":"voucherReport",
 					"menuReports/groupReportVouchersHistory":"InvalidPage",
-					"menuReports/storeReportVouchersHistory":"InvalidPage",
+					"menuReports/storeReportVouchersHistory":"InvalidPage"
 				    },
 				    voucherReport:function() {
 					this._setup();

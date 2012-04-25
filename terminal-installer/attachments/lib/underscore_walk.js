@@ -104,5 +104,5 @@ _.mixin({
 		    _.identity,
 		    transformation(form)
 		);
-	    },
+	    }
 	});

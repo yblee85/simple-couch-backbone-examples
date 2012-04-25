@@ -8,6 +8,7 @@ var Rewards = couchDoc.extend(
 	    this.set({mobqredits_conversion: 0, 
 				   use_mobqredits:false,
 				   qriket_conversion: 0,
+				   qriket_percentage: 0,
 				   use_qriket:false});
 	    return this;
 	},

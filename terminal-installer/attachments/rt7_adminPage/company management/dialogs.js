@@ -627,6 +627,7 @@ function companyModifyRewardsViewDialog (html,options) {
 	     "Apply" : function() {
 	     	 var mobqreditsconversion = form.find("#mobqredits_conversion").val();
 	     	 var qriketconversion = form.find("#qriket_conversion").val();
+	     	 var qriketpercentage = form.find("#qriket_percentage").val();
 	     	 
 	     	 if(_.isEmpty(mobqreditsconversion)){
 	     	     mobqreditsconversion = "0";
@@ -634,9 +635,13 @@ function companyModifyRewardsViewDialog (html,options) {
 	     	 
 	     	 if(_.isEmpty(qriketconversion)){
 	     	     qriketconversion = "0";
-	     	 }  
-		 options.saveRewardsProgram(Number(mobqreditsconversion), Number(qriketconversion));
-		 console.log("conversion saved; mobqredit: " + Number(mobqreditsconversion) + ", qriket: " + Number(qriketconversion));
+	     	 }
+	     	 
+	     	 if(_.isEmpty(qriketpercentage)) {
+	     	     qriketpercentage = "0";
+	     	 }
+	     	   
+		 options.saveRewardsProgram(Number(mobqreditsconversion), Number(qriketconversion), Number(qriketpercentage));
 		 d.dialog('close');
 	     },
 	     "Cancel" : function() {

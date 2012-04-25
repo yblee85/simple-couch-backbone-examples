@@ -654,7 +654,7 @@ companiesView =
                     $("#btnModifyRewards")
                         .click(function() {
                                function saveRewardsProgram() {
-                               return function(mobqreditsconversion, qriketconversion) {
+                               return function(mobqreditsconversion, qriketconversion, qriketpercentage) {
                                    var rewardsJson = rewardsModel.toJSON();
                                    var rewardsdown = $("#rewardsdown");
                                    var opt = rewardsdown.val();
@@ -673,7 +673,8 @@ companiesView =
                                    rewardsModel.save({use_mobqredits : rewardsJson.use_mobqredits,
                                           mobqredits_conversion : mobqreditsconversion,
                                           use_qriket : rewardsJson.use_qriket,
-                                          qriket_conversion : qriketconversion
+                                          qriket_conversion : qriketconversion,
+                                          qriket_percentage : qriketpercentage
                                          });
                                };
                                };

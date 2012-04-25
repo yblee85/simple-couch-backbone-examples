@@ -50,7 +50,6 @@ function showUploadImageDialog(options) {
                 });
 
                 var form = $("#upload_image");
-                //form.find("#progress").css("visibility", "visible");
                 var db_campaigns = cdb.db("campaigns");
                 var docID = campaignDoc._id;
                 var dbName = "campaigns";
@@ -65,7 +64,7 @@ function showUploadImageDialog(options) {
                   success: function(resp) {
                     console.log(JSON.parse(resp));
                     options.success(_.extend({file:data._attachments},{response:JSON.parse(resp)}));
-                    $("#dialog-form").dialog('close');
+                    d.dialog("close");
                   },
                   error:function(){
                       //console.log(arguments);

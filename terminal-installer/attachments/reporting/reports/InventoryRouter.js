@@ -22,7 +22,7 @@ var menuReportsInventoryView =
 	    events:{
 		'click .generate_report':'generate_report',
 		'change #inventorydown':'select_table_category',
-		'click #btnExport':'export_report',
+		'click #btnExport':'export_report'
 	    },
 	    setup:function(){
 		var view = this;
