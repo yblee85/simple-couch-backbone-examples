@@ -322,34 +322,6 @@ function refundTransactionsIndexRangeFetcher_F(id){
     };
 };
 
-/****************** voucher fetcher *******************************/
-function otherTransactionsIndexRangeFetcher_F(optionNum){
-    var view = cdb.view('reporting','id_optiontype_index_voucher');
-    var db = cdb.db('cashedout_transactions',{},true);
-    return function(id) {
-        return function(startIndex,endIndex){
-            switch(Number(optionNum)) {
-                case 0:
-                    var notZeroVouchers = _async.transactionRangeQuery(startIndex,endIndex)(view,db,[id,"NOTZEROBALANCE"]);
-                    var zeroVouchers = _async.transactionRangeQuery(startIndex,endIndex)(view,db,[id,"ZEROBALANCE"]);
-                    return extractDocValMerge([notZeroVouchers,zeroVouchers]);
-                break;
-                case 1:
-                    var notZeroVouchers = _async.transactionRangeQuery(startIndex,endIndex)(view,db,[id,"NOTZEROBALANCE"]);
-                    return extractDocValMerge([notZeroVouchers]);
-                break;
-                case 2:
-                    var zeroVouchers = _async.transactionRangeQuery(startIndex,endIndex)(view,db,[id,"ZEROBALANCE"]);
-                    return extractDocValMerge([zeroVouchers]);
-                break;
-            }
-        return extractDocValMerge([notZeroVouchers,zeroVouchers]);
-        };    
-    };
-    
-}
-/******************************************************************/
-
 function generalCashoutListFetcher_Period_F(startDate,endDate){
     var view = cdb.view('reporting','cashouts_id_date');
     var db = cdb.db('cashouts',{},true);
@@ -521,15 +493,32 @@ function discountTransactionsFromCashoutsFetcher(terminals,startDate,endDate){
 };
 
 /********************************** voucher report **********************************/
-function otherTransactionsFromCashoutsFetcher(terminals,startDate,endDate,optionNum){
-    function otherMap(terminals){
-    return function(transaction){
-        var terminalForTransaction = _.find(terminals, function(ter){return transaction.terminal_id==ter.id;});
-        return _.extend({},transaction,terminalForTransaction,{date: jodaDateFormatter(transaction.time.start)});
+function otherTransactionsRangeFetcher(id, startDate, endDate) {
+    return function(callback){
+        var dateStart = date.toArray.until.day(startDate);
+        var dateEnd = date.toArray.until.day(endDate);
+        
+        $.couch.db("cashedout_transactions").view("reporting/voucher_id_date", {
+            reduce:false,
+            startkey:[id].concat(dateStart),
+            endkey:[id].concat(dateEnd),
+            include_docs:true,
+            success:function(resp){
+                var data = _.map(resp.rows,function(row){
+                    var doc = row.doc;
+                    var val = row.value;
+                    
+                    return _.extend(val,doc,{date: jodaDateFormatter(doc.time.start)});
+                });
+                
+                callback(undefined,data);
+            },
+            error:function(status) {
+                callback(status,undefined);
+            }
+        });
     };
-    };
-    return processedTransactionsFromCashouts(terminals,startDate,endDate)(otherTransactionsIndexRangeFetcher_F(optionNum),otherMap(terminals));
-};
+}
 /************************************************************************************/
 
 function cashoutReportFetcher(terminals,startDate,endDate){

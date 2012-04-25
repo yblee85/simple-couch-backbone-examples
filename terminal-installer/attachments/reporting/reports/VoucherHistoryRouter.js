@@ -48,6 +48,9 @@ var voucherHistoryView =
 						    var endDateForQuery = new Date($("#dateTo").val());
 						    endDateForQuery.addDays(1);
 						    
+						    // this group/store/terminal dropdown boxes are hidden
+						    // because this report is always company level so it doesn't need to be shown
+						    // this ids is used for terminal name
 						    if(dropdownTerminal.val()=="ALL") {
 							ids = _($('option', dropdownTerminal)).chain()
 							    .filter(function(item){ return item.value!=="ALL";})
@@ -56,19 +59,77 @@ var voucherHistoryView =
 								 })
 							    .value();
 						    } else {
-							var sd = $("#terminalsdown option:selected");
-							ids =[{id:sd.val(), name:sd.text()}];
+    							var sd = $("#terminalsdown option:selected");
+    							ids =[{id:sd.val(), name:sd.text()}];
 						    }
 						    
-						    //var opts =[];
-						    //if(voucherdown.val()=="ALL") {
-						    //    opts = opts.concat("ZEROBALANCE").concat("NOTZEROBALANCE");
-						    //} else {
-						    //    opts = opts.concat(voucherdown.val());
-						    //}
+						    // voucher report is always company level
+						    otherTransactionsRangeFetcher(ReportData.company._id, startDate, endDateForQuery)
+						    (function(err,resp){
+						        if(!err) {
+						            console.log("success fetch voucher");
+						            console.log(resp);
+						            
+						            var totalrow = {};
+                                     totalrow.redeemed = currency_format(_.reduce(resp, function(init, item){
+                                                              return init + Number(item.voucherRedeemed);
+                                                              }, 0));
+                                     
+                                     var data_TMP = processTransactionsTMP(resp);
+                                     
+                                     data_TMP = _.map(data_TMP,function(item){
+                                         var found_idname_pair = _.find(ids, function(idname){
+                                             return idname.id == item.terminal_id;
+                                         });
+                                         return _.extend(item,{name:found_idname_pair.name});
+                                     });
+                                     
+                                     data_TMP = _.sortBy(data_TMP,function(item){return item.time.start;});
+                                     var html = ich.menuReportsVouchertable_TMP({items:data_TMP, totalrow:totalrow});
+        
+                                     $("#voucherstable").html(html);
+                                     
+                                     _.each(data_TMP, function(item){
+                                            var item = _.clone(item);
+                                            
+                                            var dialogtitle=getDialogTitle(ReportData,item);
+                                            
+                                            $("[id]")
+                                            .filter(function(){return $(this).attr('id') == item._id;})
+                                            .each(function(){
+                                                  $(this).button()
+                                                      .click(function(){
+                                                         // if there're more than 2 vouchers in one transaction,
+                                                         // when detail button is clicked, it renders 2 transaction dialog
+                                                         // thHtml ; html of the button's row
+                                                         var trHtml = $(this).parent().parent().parent().html();
+                                                         if(trHtml.indexOf(item.voucherID)>=0) {
+                                                                 var btnData = item;
+                                                                 btnData.discount=null;
+                                                                 //TODO:
+                                                                 //btnData.storename = ReportData.store.storeName;
+                                                                 //FIXME: use walk,
+                                                                 _.applyToValues(ReportData,
+                                                                         function(o){
+                                                                         if(o.store_id==btnData.store_id){
+                                                                             btnData.storename = o.storeName;
+                                                                         }
+                                                                         return o;
+                                                                         }
+                                                                         ,true);
+                                                                 
+                                                                 _.applyToValues(btnData,currency_format,true);
+                                                                 
+                                                                 var html = ich.generalTransactionQuickViewDialog_TMP(btnData);
+                                                                 quickmenuReportsTransactionViewDialog(html, {title:dialogtitle});
+                                                         }
+                                                         });
+                                                  }); 
+                                        });
+						        }
+						    });
 						    
-						    //console.log(ids);
-						    //TODO : fetch transactions
+						    /*
 						    otherTransactionsFromCashoutsFetcher(ids,startDate,endDateForQuery,voucherdown.val())
 						    (function(err,resp){
 							 
@@ -122,6 +183,7 @@ var voucherHistoryView =
 									      }); 
 								});
 						     });
+						     */
 						} else {
 						    alert("Input Date");
 						}
