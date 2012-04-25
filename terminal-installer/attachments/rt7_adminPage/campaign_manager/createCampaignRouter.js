@@ -324,11 +324,11 @@ var locations_view =
 
 var companies_view =
     Backbone.View.extend({
-        render:function(companies){
+        render:function(companyObjs){
             var view = this;
             var el = view.$el;
             var template = view.options.template;
-            var html = ich[template]({companies:companies});
+            var html = ich[template]({companies:companyObjs});
             $(el).html(html);
             $(el).find("#companies").multiselect();
         }
@@ -442,14 +442,17 @@ var location_and_company_view =
                     
                    
                     var keys = _.pluck(resp.rows,"key");
-                    view.listLocationsCompany = _.map(keys,function(listLocCom){
+                    var values = _.pluck(resp.rows,"value");
+                    var zippedList = _.zip(keys,values);
+                    view.listLocationsCompany = _.map(zippedList,function(listLocCom){
+                        listLocCom = _.flatten(listLocCom);
                         return {
                             country:listLocCom[0],
                             province:listLocCom[1],
                             city:listLocCom[2],
                             areaCode:listLocCom[3],
                             postalCode:listLocCom[4],
-                            company:listLocCom[5]
+                            companyObj:{name:listLocCom[5],id:listLocCom[6]}
                         };
                     });
                     
@@ -477,7 +480,7 @@ var location_and_company_view =
             function extractCompany(loc_with_origin){
                 if(loc_with_origin.location_type=="top"){
                     return _(view.listLocationsCompany).chain()
-                            .map(function(item){return item.company;})
+                            .map(function(item){return item.companyObj;})
                             .value();
                 } else {
                     var locations = _.values(loc_with_origin.origins);
@@ -489,7 +492,7 @@ var location_and_company_view =
                                         .size()
                                         .value() == (6-locations.length);
                             })
-                            .map(function(item){return item.company;})
+                            .map(function(item){return item.companyObj;})
                             .value();
                 }
             }
@@ -501,7 +504,13 @@ var location_and_company_view =
             var companies = _(selected_location_with_origins).chain()
                             .map(extractCompany)
                             .flatten()
+                            .map(function(item){
+                            return JSON.stringify(item);
+                            })
                             .uniq()
+                            .map(function(str){
+                            return JSON.parse(str);
+                            })
                             .value();
             
             view.companies_view.render(companies);

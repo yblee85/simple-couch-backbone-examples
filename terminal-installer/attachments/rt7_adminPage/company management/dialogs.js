@@ -409,7 +409,10 @@ function TerminalInputDialog (attachTo,options) {
     .add(centrallycontrolmenus)
     .add(usingautomatedpayment)
     .add(usingmobqredits);
-
+    
+    companyCode.attr('disabled',true);
+    storeCode.attr('disabled',true);
+    
     var tips = $(".validateTips");
     
     d.dialog(

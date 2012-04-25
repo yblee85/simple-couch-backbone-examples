@@ -304,7 +304,7 @@
 	<!--<div class="report-menu"><a style="cursor: pointer;" onclick="showMsg();"><img src="../images/admin/user.png" class="report-menu-icon" border="0"/>Backoffice Admin User Info</a></div>-->
 	<!--<div class="report-menu"><a style="cursor: pointer;" onclick="showMsg();"><img src="../images/admin/reports.png" class="report-menu-icon" border="0"/>Reports</a></div>-->
 	<!--<div class="report-menu"><a style="cursor: pointer;" onclick="showMsg();"><img src="../images/admin/terminal.png" class="report-menu-icon" border="0"/>Install/Deactivate a Terminal</a></div>-->
-	<div class="report-menu"><a href="#createcampaigns"><img src="../images/admin/importvoucher.png" class="report-menu-icon" border="0"/>Create Campaign</a></div>
+	<div class="report-menu"><a href="#createcampaigns"><img src="../images/admin/createcampaign.png" class="report-menu-icon" border="0"/>Create Campaign</a></div>
 	<div class="report-menu"><a style="cursor: pointer;" onClick="logout()"><img src="../images/admin/logout.png" class="report-menu-icon" border="0"/>Logout</a></div>
 	<div style="clear:both"></div>
       </div>
@@ -679,7 +679,7 @@
     <li>Area Code : 
       <select id="areaCode" class="{{>commonClasses_P}}"></select>
     </li>
-    <li>Postal Code :
+    <li>Postal Code : 
       <input type="text" id="postalCode" class="text ui-widget-content ui-corner-all" />
     </li>
       </ul>
@@ -1210,7 +1210,7 @@
     <script id="companySelection_TMP" type="text/html">
     <select id="companies" type="select"  name="companies" multiple="multiple" size=8>
       {{#companies}}
-      <option value={{.}}>{{.}}</option>
+      <option value="{{id}}">{{name}}</option>
       {{/companies}}
     </select>
     </script>

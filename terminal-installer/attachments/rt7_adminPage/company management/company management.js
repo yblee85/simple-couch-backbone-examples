@@ -574,7 +574,10 @@ var CompanyManagementRouter = new (Backbone.Router.extend(
 					       $("#main").html(html);
 					       $("#create-dialog")
 						   .html(ich.terminalInputDialog_TMP(
-							     {title:"Make a new Terminal",terminal:{}}));
+							     //{title:"Make a new Terminal",terminal:{}}));
+							     {title:"Make a new Terminal",
+							      companyCode:companyJSON.companyName,
+							      storeCode:store.storeName}));
 					       TerminalCreateDialog("create-thing",addTerminal(companyID,groupID,storeID));
 					   },
 					   modifyTerminal:function(companyID, groupID, storeID,terminalID){
@@ -1061,7 +1064,9 @@ terminalsView =
 		$('#form').find('input').attr("disabled", true);
 		$("#dialog-hook").html(ich.terminalInputDialog_TMP({
 								       title : "Edit the Terminal",
-								       terminal : terminalToEdit
+								       //terminal : terminalToEdit
+								       companyCode:terminalToEdit.companyCode,
+                                       storeCode:terminalToEdit.storeCode
 								   }));
 		TerminalModifyDialog("edit-thing", editTerminal(companyID, groupID, storeID, terminalID));
 		console.log("renderModifyPage terminals view rendered");
