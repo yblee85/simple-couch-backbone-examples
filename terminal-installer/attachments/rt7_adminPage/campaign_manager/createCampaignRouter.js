@@ -265,7 +265,12 @@ var locations_view =
             var template = view.options.template;
             var html = ich[template]({country:tree});
             $(el).html(html);
-            $(el).jstree();
+            $(el).jstree({
+                "ui" :{
+                    "select_multiple_modifier":"ctrl",
+                    "select_range_modifier" : false
+                }
+            });
         },
         get_name_loc_pair:function(anchor){
             var current_li = $(anchor).parent();

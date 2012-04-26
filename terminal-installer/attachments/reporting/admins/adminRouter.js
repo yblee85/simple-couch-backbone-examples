@@ -70,8 +70,7 @@ var adminRouter =
     new (Backbone.Router.extend(
 	     {
 		 routes: {
-		     "menuAdministration/":"setup"//,
-		     //"menuAdministration/:id":"load_users_for_id"
+		     "menuAdministration/":"setup"
 		 },
 		 initialize:function(){
 		     var router = this;
@@ -128,13 +127,14 @@ var adminRouter =
 		     router.load_users();
 		 },
 		 load_users:function(){
-		     this.load_users_for_id(topLevelEntity(ReportData).id);
+		     var entity_id = topLevelEntity(ReportData).id;
+		     var entity_name = $("#"+entity_id).attr('name');
+		     this.load_users_for_id(entity_id,entity_name);
 		 },
-		 load_users_for_id:function(id){
+		 load_users_for_id:function(id, entity_name){
 		     var router = this;
 		     router.current_entity_id = id;
-		     var entity_str = $("#"+id).html();
-             $("#naviStringInOtherUser").html(entity_str);
+             $("#naviStringInOtherUser").html(entity_name);
 		     router.user_collection.reset();
 		     console.log("menuAdministration: " + id);
 		     var breadCrumb = autoBreadCrumb(); //?

@@ -50,13 +50,13 @@ ddoc.shows = {
 	    return csv;
 	}
 	if(doc && doc.file_name && doc.date && doc.file_ext){
-	    var fileName = doc.file_name + '-' + doc.date +'.'+ doc.file_ext
+	    var fileName = doc.file_name + '-' + doc.date +'.'+ doc.file_ext;
 	}
 	else if(doc && doc.file_name){
-	    var fileName = doc.file_name +'.'+ doc.file_ext
+	    var fileName = doc.file_name +'.'+ doc.file_ext;
 	}
 	else{
-	    var fileName = 'doc.txt'
+	    var fileName = 'doc.txt';
 	}
 	//provides("text", function() {
 		     return {
@@ -65,7 +65,7 @@ ddoc.shows = {
 			     'Content-Disposition':'attachment; filename='+fileName
 			 },
 			 "body" : doc.content.map(csvEscapeOnePerLine).join('\n')
-		     }
+		     };
 //		 })
     }
 };
