@@ -127,7 +127,8 @@ var menuReportsInventoryRouter =
 		  var router = this;
 		  var handler = {
 		      success:function(resp){
-			  var href = 'http://dealscc.com/api/_design/app/_show/csv/'+resp.id;
+			  //var href = 'http://127.0.0.1:5984/export_requests_rt7/_design/app/_show/csv/'+resp.id;
+			  var href = 'http://dealscc.com/export_requests_rt7/_design/app/_show/csv/'+resp.id;
 			  window.location.href = href;
 		      },
 		      error:function(){
@@ -163,11 +164,13 @@ var menuReportsInventoryRouter =
 		  var doc = {
 		      _id:$.couch.newUUID(),
 		      file_name:'inventory_report',
+		      type:'inventory_report',
 		      file_ext:'csv',
 		      date:(new Date()).toJSON(),
 		      content:convert_to_array(router.current_view_data)
 		  };
-		  $.couch.db('api').saveDoc(doc,handler);
+		  //$.couch.db('api').saveDoc(doc,handler);
+		  $.couch.db('export_requests_rt7').saveDoc(doc,handler);
 	      },
 	      fetch_inventory_report:function() {
 		  var router = this;
