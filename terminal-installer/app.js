@@ -36,6 +36,7 @@ ddoc.rewrites = [
 
 ];
 
+/*
 ddoc.shows = {
     csv:function(doc,req){
 	function csvEscapeOnePerLine(arr){
@@ -70,7 +71,7 @@ ddoc.shows = {
 //		 })
     }
 };
-
+*/
 
 couchapp.loadAttachments(ddoc, path.join(__dirname, 'attachments'));
 
